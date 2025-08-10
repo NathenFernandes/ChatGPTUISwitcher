@@ -57,6 +57,7 @@
       neutralizeInlineBackgrounds();
       forceSidebarTransparent();
       removeProblematicClasses();
+      addBlurEffectToTargetElements();
       setupObservers();
     }
   }
@@ -317,6 +318,33 @@
     }
   }
 
+  function addBlurEffectToTargetElements() {
+    if (!isEnabled) return;
+    
+    // Target elements with the specific class pattern the user wants to modify
+    // Look for elements that contain the max-xs force-hide-label pattern
+    const targetSelector = '[class*="max-xs"][class*="force-hide-label"][class*="relative"][class*="z-1"][class*="flex"][class*="h-full"][class*="max-w-full"][class*="flex-1"][class*="flex-col"]';
+    const elements = document.querySelectorAll(targetSelector);
+    
+    if (elements.length > 0) {
+      // Only modify the LAST instances as requested by user
+      // Take the last 2 elements to ensure we get the ones the user wants
+      const lastElements = Array.from(elements).slice(-2);
+      
+      for (const el of lastElements) {
+        try {
+          // Check if element already has our blur classes to avoid duplicate application
+          if (!el.classList.contains('backdrop-blur-sm')) {
+            // Add the new classes: backdrop-blur-sm rounded-[28px] overflow-hidden
+            el.classList.add('backdrop-blur-sm');
+            el.classList.add('rounded-[28px]');
+            el.classList.add('overflow-hidden');
+          }
+        } catch (_) {}
+      }
+    }
+  }
+
   function setupObservers() {
     if (!isEnabled) { teardownObservers(); return; }
 
@@ -328,6 +356,7 @@
       neutralizeInlineBackgrounds();
       forceSidebarTransparent();
       removeProblematicClasses();
+      addBlurEffectToTargetElements();
     });
     if (document.body) {
       bodyObserver.observe(document.body, {
@@ -343,6 +372,7 @@
       neutralizeInlineBackgrounds();
       forceSidebarTransparent();
       removeProblematicClasses();
+      addBlurEffectToTargetElements();
     });
     htmlObserver.observe(document.documentElement, {
       attributes: true,
@@ -355,6 +385,7 @@
       neutralizeInlineBackgrounds();
       forceSidebarTransparent();
       removeProblematicClasses();
+      addBlurEffectToTargetElements();
     }, 500);
 
     // Handle history navigation (SPA-like)
@@ -384,6 +415,7 @@
         neutralizeInlineBackgrounds();
         forceSidebarTransparent();
         removeProblematicClasses();
+        addBlurEffectToTargetElements();
       }
       setupObservers();
     } else {
